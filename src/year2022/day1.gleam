@@ -2,16 +2,12 @@ import gleam/string
 import gleam/list
 import gleam/int
 import gleam/function
+import gleam/result
 
 fn calories_from_overview(overview: String) -> Int {
   string.split(overview, "\n")
-  |> list.fold(
-    0,
-    fn(total, cals) {
-      assert Ok(calories) = int.parse(cals)
-      total + calories
-    },
-  )
+  |> list.map(function.compose(int.parse, result.unwrap(_, 0)))
+  |> int.sum
 }
 
 pub fn total_calories_per_elf(input: String) -> List(Int) {
@@ -21,11 +17,9 @@ pub fn total_calories_per_elf(input: String) -> List(Int) {
 }
 
 pub fn solve_a(input) {
-  assert Ok(result) =
-    total_calories_per_elf(input)
-    |> list.first
-
-  result
+  total_calories_per_elf(input)
+  |> list.first
+  |> result.unwrap(0)
 }
 
 pub fn solve_b(input) {
