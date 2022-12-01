@@ -10,7 +10,7 @@ fn calories_from_overview(overview: String) -> Int {
   |> int.sum
 }
 
-pub fn total_calories_per_elf(input: String) -> List(Int) {
+fn total_calories_per_elf(input: String) -> List(Int) {
   string.split(input, "\n\n")
   |> list.map(calories_from_overview)
   |> list.sort(function.flip(int.compare))
