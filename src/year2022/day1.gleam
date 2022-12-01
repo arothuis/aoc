@@ -16,13 +16,13 @@ fn total_calories_per_elf(input: String) -> List(Int) {
   |> list.sort(function.flip(int.compare))
 }
 
-pub fn solve_a(input) {
+pub fn solve_a(input: String) -> Int {
   total_calories_per_elf(input)
   |> list.first
   |> result.unwrap(0)
 }
 
-pub fn solve_b(input) {
+pub fn solve_b(input: String) -> Int {
   total_calories_per_elf(input)
   |> list.take(3)
   |> int.sum
