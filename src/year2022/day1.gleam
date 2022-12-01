@@ -1,7 +1,7 @@
 import gleam/string
 import gleam/list
 import gleam/int
-import util/collection
+import gleam/function
 
 fn calories_from_overview(overview: String) -> Int {
   string.split(overview, "\n")
@@ -17,7 +17,7 @@ fn calories_from_overview(overview: String) -> Int {
 pub fn total_calories_per_elf(input: String) -> List(Int) {
   string.split(input, "\n\n")
   |> list.map(calories_from_overview)
-  |> list.sort(collection.descending_order)
+  |> list.sort(function.flip(int.compare))
 }
 
 pub fn solve_a(input) {
@@ -29,10 +29,7 @@ pub fn solve_a(input) {
 }
 
 pub fn solve_b(input) {
-  assert Ok(result) =
-    total_calories_per_elf(input)
-    |> list.take(3)
-    |> list.reduce(int.add)
-
-  result
+  total_calories_per_elf(input)
+  |> list.take(3)
+  |> int.sum
 }
