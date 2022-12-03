@@ -4,7 +4,19 @@ import gleam/set.{Set}
 import gleam/int
 import gleam/function
 import gleam/result
-import gleam/io
+
+pub fn solve_a(input: String) -> Int {
+  string.split(input, "\n")
+  |> list.map(function.compose(find_double_item, prioritize))
+  |> int.sum
+}
+
+pub fn solve_b(input: String) -> Int {
+  string.split(input, "\n")
+  |> list.sized_chunk(3)
+  |> list.map(function.compose(find_badge, prioritize))
+  |> int.sum
+}
 
 fn prioritize(item: String) -> Int {
   case <<item:utf8>> {
@@ -26,10 +38,10 @@ fn find_double_item(rucksack: String) -> String {
 }
 
 fn make_char_set(input: String) -> Set(String) {
-  input 
-    |> string.trim
-    |> string.to_graphemes
-    |> set.from_list
+  input
+  |> string.trim
+  |> string.to_graphemes
+  |> set.from_list
 }
 
 fn find_badge(group: List(String)) -> String {
@@ -41,17 +53,4 @@ fn find_badge(group: List(String)) -> String {
     |> list.first
 
   badge
-}
-
-pub fn solve_a(input: String) -> Int {
-  string.split(input, "\n")
-  |> list.map(function.compose(find_double_item, prioritize))
-  |> int.sum
-}
-
-pub fn solve_b(input: String) -> Int {
-  string.split(input, "\n")
-  |> list.sized_chunk(3)
-  |> list.map(function.compose(find_badge, prioritize))
-  |> int.sum
 }

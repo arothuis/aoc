@@ -2,6 +2,18 @@ import gleam/string
 import gleam/list
 import gleam/int
 
+pub fn solve_a(input: String) -> Int {
+  string.split(input, "\n")
+  |> list.map(parse_round_a)
+  |> int.sum
+}
+
+pub fn solve_b(input: String) -> Int {
+  string.split(input, "\n")
+  |> list.map(parse_round_b)
+  |> int.sum
+}
+
 type Move {
   Rock
   Paper
@@ -85,16 +97,4 @@ fn parse_round_b(input: String) -> Int {
   }
 
   score_move(required_move(theirs, outcome)) + score_outcome(outcome)
-}
-
-pub fn solve_a(input: String) -> Int {
-  string.split(input, "\n")
-  |> list.map(parse_round_a)
-  |> int.sum
-}
-
-pub fn solve_b(input: String) -> Int {
-  string.split(input, "\n")
-  |> list.map(parse_round_b)
-  |> int.sum
 }

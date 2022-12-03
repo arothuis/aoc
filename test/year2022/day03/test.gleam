@@ -1,31 +1,31 @@
 import gleeunit/should
-import year2022/day2 as day
+import year2022/day03 as day
 import util/aoc
 
 fn example() {
-  aoc.get_input(2022, 2, "example")
+  aoc.get_input(2022, 3, "example")
 }
 
 fn input() {
-  aoc.get_input(2022, 2, "input")
+  aoc.get_input(2022, 3, "input")
 }
 
 pub fn example_a_test() {
   day.solve_a(example())
-  |> should.equal(15)
+  |> should.equal(157)
 }
 
 pub fn solve_a_test() {
   day.solve_a(input())
-  |> should.equal(14827)
+  |> should.equal(7716)
 }
 
 pub fn example_b_test() {
   day.solve_b(example())
-  |> should.equal(12)
+  |> should.equal(70)
 }
 
 pub fn solve_b_test() {
   day.solve_b(input())
-  |> should.equal(13889)
+  |> should.equal(2973)
 }

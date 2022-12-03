@@ -1,5 +1,5 @@
 import gleeunit/should
-import year2022/day1 as day
+import year2022/day01 as day
 import util/aoc
 
 fn example() {

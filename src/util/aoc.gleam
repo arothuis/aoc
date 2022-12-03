@@ -1,10 +1,23 @@
-import gleam/int.{to_string}
+import gleam/int
+import gleam/string
 import gleam/erlang/file
 
 pub fn get_input(year: Int, day: Int, name: String) {
-  assert Ok(input) =
-    file.read(
-      "test/year" <> to_string(year) <> "/day" <> to_string(day) <> "/" <> name <> ".txt",
+  let padded_day =
+    int.to_string(day)
+    |> string.pad_left(2, "0")
+
+  let path =
+    string.join(
+      [
+        "test",
+        "year" <> int.to_string(year),
+        "day" <> padded_day,
+        name <> ".txt",
+      ],
+      "/",
     )
+
+  assert Ok(input) = file.read(path)
   input
 }
