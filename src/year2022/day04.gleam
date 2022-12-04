@@ -1,19 +1,22 @@
-import gleam/function
 import gleam/int
 import gleam/list
 import gleam/string
 
 pub fn solve_a(input: String) -> Int {
-  string.split(input, "\n")
-  |> list.map(parse_sections)
-  |> list.filter(is_fully_contained)
-  |> list.length
+  count_inefficiencies(input, is_fully_contained)
 }
 
 pub fn solve_b(input: String) -> Int {
+  count_inefficiencies(input, has_overlap)
+}
+
+fn count_inefficiencies(
+  input: String,
+  qualify: fn(Section, Section) -> Bool,
+) -> Int {
   string.split(input, "\n")
   |> list.map(parse_sections)
-  |> list.filter(has_overlap)
+  |> list.filter(fn(section) { qualify(section.0, section.1) })
   |> list.length
 }
 
@@ -21,31 +24,25 @@ type Section =
   #(Int, Int)
 
 fn parse_section(input: String) -> Section {
-  assert Ok(section) =
+  let [start, end] =
     string.split(input, "-")
     |> list.filter_map(int.parse)
-    |> list.combination_pairs
-    |> list.first
 
-  section
+  #(start, end)
 }
 
 fn parse_sections(input: String) -> #(Section, Section) {
-  assert Ok(sections) =
+  let [a, b] =
     string.split(input, ",")
     |> list.map(parse_section)
-    |> list.combination_pairs
-    |> list.first
 
-  sections
+  #(a, b)
 }
 
-fn is_fully_contained(sections: #(Section, Section)) -> Bool {
-  let #(#(a_start, a_end), #(b_start, b_end)) = sections
-  a_start >= b_start && a_end <= b_end || b_start >= a_start && b_end <= a_end
+fn is_fully_contained(a: Section, b: Section) -> Bool {
+  a.0 >= b.0 && a.1 <= b.1 || b.0 >= a.0 && b.1 <= a.1
 }
 
-fn has_overlap(sections: #(Section, Section)) -> Bool {
-  let #(#(a_start, a_end), #(b_start, b_end)) = sections
-  a_start >= b_start && a_start <= b_end || b_start >= a_start && b_start <= a_end
+fn has_overlap(a: Section, b: Section) -> Bool {
+  a.0 >= b.0 && a.0 <= b.1 || b.0 >= a.0 && b.0 <= a.1
 }
