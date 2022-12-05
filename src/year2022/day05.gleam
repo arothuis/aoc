@@ -1,4 +1,3 @@
-import gleam/io
 import gleam/string
 import gleam/list
 import gleam/result
@@ -78,8 +77,8 @@ fn apply(
     assert Ok(next_state) =
       result.then(
         map.get(state, command.from),
-        fn(stack) {
-          let #(moved, remains) = list.split(stack, command.amount)
+        fn(from_stack) {
+          let #(moved, remains) = list.split(from_stack, command.amount)
 
           let next =
             map.update(state, command.from, fn(_) { remains })
