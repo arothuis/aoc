@@ -7,18 +7,21 @@ import gleam/function
 import gleam/map.{Map}
 
 pub fn solve_a(input: String) -> String {
-  let #(start, commands) = parse_input(input)
-
-  list.fold(commands, start, apply(list.reverse))
-  |> map.values
-  |> list.map(fn(n) { result.unwrap(list.first(n), "") })
-  |> string.join("")
+  solve(input, list.reverse)
 }
 
 pub fn solve_b(input: String) -> String {
-  let #(start, commands) = parse_input(input)
+  solve(input, function.identity)
+}
 
-  list.fold(commands, start, apply(function.identity))
+fn solve(input: String, stacking_method: fn(List(String)) -> List(String)) {
+  let [start, commands] = string.split(input, "\n\n")
+
+  list.fold(
+    parse_commands(commands),
+    parse_start(start),
+    apply(stacking_method),
+  )
   |> map.values
   |> list.map(fn(n) { result.unwrap(list.first(n), "") })
   |> string.join("")
@@ -29,11 +32,6 @@ type State =
 
 type Command {
   Command(from: Int, to: Int, amount: Int)
-}
-
-fn parse_input(input: String) -> #(State, List(Command)) {
-  let [start, commands] = string.split(input, "\n\n")
-  #(parse_start(start), parse_commands(commands))
 }
 
 fn parse_start(start: String) -> State {
