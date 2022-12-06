@@ -57,8 +57,8 @@ fn parse_start(start: String) -> State {
 
 fn parse_commands(input: String) -> List(Command) {
   string.split(input, "\n")
-  |> list.map(fn(n) {
-    let [_, a, _, b, _, c] = string.split(n, " ")
+  |> list.map(fn(line) {
+    let [_, a, _, b, _, c] = string.split(line, " ")
 
     assert Ok(amount) = int.parse(a)
     assert Ok(from) = int.parse(b)
