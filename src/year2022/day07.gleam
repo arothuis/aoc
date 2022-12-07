@@ -23,7 +23,7 @@ pub fn solve_b(input: String) -> Int {
   let required_space = 30000000
 
   let dirs = analyze_dirs(input)
-  assert Ok(used) = map.get(dirs, "/")
+  assert Ok(used) = map.get(dirs, ["/"])
   let to_free = required_space - { max_space - used }
 
   map.values(dirs)
@@ -33,10 +33,10 @@ pub fn solve_b(input: String) -> Int {
 }
 
 type Context {
-  Context(dirs: List(String), seen: Map(String, Int))
+  Context(dirs: List(String), seen: Map(List(String), Int))
 }
 
-fn analyze_dirs(input: String) -> Map(String, Int) {
+fn analyze_dirs(input: String) -> Map(List(String), Int) {
   string.split(input, "\n")
   |> list.fold(Context([], map.new()), process_line)
   |> go_up_a_dir
@@ -64,15 +64,12 @@ fn process_line(context: Context, line: String) -> Context {
 }
 
 fn go_up_a_dir(context) -> Context {
-  let [_, parent_dir, ..rest] = context.dirs
-  let current = string.join(context.dirs, "/")
-  let parent = string.join([parent_dir, ..rest], "/")
+  let [_, ..parent] = context.dirs
   let child_size =
-    map.get(context.seen, current)
+    map.get(context.seen, context.dirs)
     |> result.unwrap(0)
-
   Context(
-    dirs: [parent_dir, ..rest],
+    dirs: parent,
     seen: map.update(context.seen, parent, add_size(child_size)),
   )
 }
@@ -82,6 +79,8 @@ fn go_into_dir(context, dir) -> Context {
 }
 
 fn add_file_size(context, size) -> Context {
-  let current = string.join(context.dirs, "/")
-  Context(..context, seen: map.update(context.seen, current, add_size(size)))
+  Context(
+    ..context,
+    seen: map.update(context.seen, context.dirs, add_size(size)),
+  )
 }
