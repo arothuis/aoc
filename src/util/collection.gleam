@@ -1,3 +1,4 @@
+import gleam/list
 import gleam/map.{Map}
 import gleam/option.{None, Option, Some}
 
@@ -10,6 +11,22 @@ fn do_count_elements(xs: List(a), seen: Map(a, Int)) -> Map(a, Int) {
     [] -> seen
     [x, ..tail] -> do_count_elements(tail, map.update(seen, x, count))
   }
+}
+
+fn do_zip_with(
+  xs: List(a),
+  ys: List(b),
+  fun: fn(a, b) -> c,
+  acc: List(c),
+) -> List(c) {
+  case xs, ys {
+    [x, ..xs], [y, ..ys] -> do_zip_with(xs, ys, fun, [fun(x, y), ..acc])
+    _, _ -> list.reverse(acc)
+  }
+}
+
+pub fn zip_with(xs: List(a), ys: List(b), fun: fn(a, b) -> c) -> List(c) {
+  do_zip_with(xs, ys, fun, [])
 }
 
 fn count(previous: Option(Int)) -> Int {
