@@ -2,13 +2,12 @@ import gleam/int
 import gleam/list.{Continue, Stop}
 import gleam/result
 import gleam/string
-import gleam/io
 import util/collection
 
 pub fn solve_a(input: String) -> Int {
   string.split(input, "\n")
   |> list.map(parse_line)
-  |> visibility_square
+  |> fold_square(visibility, int.max)
   |> list.flatten
   |> list.fold(0, int.add)
 }
@@ -16,111 +15,66 @@ pub fn solve_a(input: String) -> Int {
 pub fn solve_b(input: String) -> Int {
   string.split(input, "\n")
   |> list.map(parse_line)
-  |> scenic_square
+  |> fold_square(scenic_score, int.multiply)
   |> list.flatten
   |> list.fold(0, int.max)
 }
 
-fn score(seen: List(Int), tree: Int) {
-  case seen {
-    [] -> 0
-    _ ->
-      list.fold_until(
-        seen,
-        0,
-        fn(acc, before) {
-          case before {
-            _ if before < tree -> Continue(acc + 1)
-            _ if before >= tree -> Stop(acc + 1)
-          }
-        },
-      )
+fn visibility(seen: List(Int), tree: Int) {
+  let visible = list.all(list.reverse(seen), fn(n) { n < tree })
+  case visible {
+    True -> 1
+    False -> 0
   }
 }
 
-fn scenic_square(heights: List(List(Int))) -> List(List(Int)) {
-  let square_a = list.map(heights, scenic_line)
-  let square_b = list.transpose(list.map(list.transpose(heights), scenic_line))
-
-  list.index_map(
-    square_a,
-    fn(i, row_a) {
-      assert Ok(row_b) = list.at(square_b, i)
-      collection.zip_with(row_a, row_b, int.multiply)
+fn scenic_score(seen: List(Int), tree: Int) {
+  list.fold_until(
+    seen,
+    0,
+    fn(acc, before) {
+      case before >= tree {
+        False -> Continue(acc + 1)
+        True -> Stop(acc + 1)
+      }
     },
   )
 }
 
-pub fn scenic_line(heights: List(Int)) -> List(Int) {
-  collection.zip_with(
-    scenic_ltr(heights),
-    list.reverse(scenic_ltr(list.reverse(heights))),
-    int.multiply,
-  )
-}
-
-pub fn scenic_ltr(heights: List(Int)) -> List(Int) {
+fn fold_ltr(heights: List(Int), process) -> List(Int) {
   let #(_, results) =
     list.fold(
       heights,
       #([], []),
       fn(acc, next) {
         let #(seen, results) = acc
-        #([next, ..seen], [score(seen, next), ..results])
+        #([next, ..seen], [process(seen, next), ..results])
       },
     )
 
   list.reverse(results)
 }
 
-fn visibility_square(heights: List(List(Int))) -> List(List(Int)) {
-  let square_a = list.map(heights, visibility_line)
-  let square_b =
-    list.transpose(list.map(list.transpose(heights), visibility_line))
+fn fold_square(heights: List(List(Int)), process_fn, zip_fn) -> List(List(Int)) {
+  let map_fn = fold_line(_, process_fn, zip_fn)
+  let square_a = list.map(heights, map_fn)
+  let square_b = list.transpose(list.map(list.transpose(heights), map_fn))
 
   list.index_map(
     square_a,
     fn(i, row_a) {
       assert Ok(row_b) = list.at(square_b, i)
-      collection.zip_with(row_a, row_b, int.max)
+      collection.zip_with(row_a, row_b, zip_fn)
     },
   )
 }
 
-pub fn visibility_line(heights: List(Int)) -> List(Int) {
+fn fold_line(heights, process_fn, zip_fn) -> List(Int) {
   collection.zip_with(
-    visibility_ltr(heights),
-    list.reverse(visibility_ltr(list.reverse(heights))),
-    int.max,
+    fold_ltr(heights, process_fn),
+    list.reverse(fold_ltr(list.reverse(heights), process_fn)),
+    zip_fn,
   )
-}
-
-pub fn visibility_ltr(heights: List(Int)) -> List(Int) {
-  let #(_, _, visibility) =
-    list.fold(
-      heights,
-      #(-1, -1, []),
-      fn(acc, next) {
-        let #(prev, max, visibility) = acc
-        case next > prev && next > max {
-          False -> #(next, int.max(next, max), [0, ..visibility])
-          True -> #(next, int.max(next, max), [1, ..visibility])
-        }
-      },
-    )
-
-  list.reverse(visibility)
-}
-
-fn visibility(seen: List(Int), tree: Int) {
-  let visible =
-    list.reverse(seen)
-    |> list.all(fn(n) { n < tree })
-
-  case visible {
-    True -> 1
-    False -> 0
-  }
 }
 
 fn parse_line(input: String) -> List(Int) {

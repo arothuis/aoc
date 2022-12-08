@@ -1,4 +1,3 @@
-import gleam/list
 import gleam/map
 import gleeunit/should
 import util/collection
