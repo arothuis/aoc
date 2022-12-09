@@ -41,20 +41,6 @@ fn scenic_score(seen: List(Int), tree: Int) {
   )
 }
 
-fn fold_ltr(heights: List(Int), process) -> List(Int) {
-  let #(_, results) =
-    list.fold(
-      heights,
-      #([], []),
-      fn(acc, next) {
-        let #(seen, results) = acc
-        #([next, ..seen], [process(seen, next), ..results])
-      },
-    )
-
-  list.reverse(results)
-}
-
 fn fold_square(heights: List(List(Int)), process_fn, zip_fn) -> List(List(Int)) {
   let map_fn = fold_line(_, process_fn, zip_fn)
   let square_a = list.map(heights, map_fn)
@@ -75,6 +61,20 @@ fn fold_line(heights, process_fn, zip_fn) -> List(Int) {
     list.reverse(fold_ltr(list.reverse(heights), process_fn)),
     zip_fn,
   )
+}
+
+fn fold_ltr(heights: List(Int), process_fn) -> List(Int) {
+  let #(_, results) =
+    list.fold(
+      heights,
+      #([], []),
+      fn(acc, next) {
+        let #(seen, results) = acc
+        #([next, ..seen], [process_fn(seen, next), ..results])
+      },
+    )
+
+  list.reverse(results)
 }
 
 fn parse_line(input: String) -> List(Int) {
