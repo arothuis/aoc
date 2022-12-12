@@ -1,6 +1,5 @@
 import gleam/function
 import gleam/int
-import gleam/io
 import gleam/list
 import gleam/map.{Map}
 import gleam/option.{None, Option, Some}
